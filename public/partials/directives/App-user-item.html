@@ -1,0 +1,40 @@
+<div class="userItem">
+
+  <div class="userItem__header">
+    <img src="img/user-avatar.svg">
+    <span>{[{ config.name }]}</span><small>{[{ config.username }]}</small>
+    <div><button ng-click="deleteUser(config._id)">Delete</button></div>
+  </div>
+
+  <div class="userItem__permissions">
+
+    <div class="cuserItem__permissions__box">
+      <div class="userItem__permissions__item">
+        <input ng-change="change()" type="checkbox" ng-model="config.permissions.works" class="js-switch" checked ui-switch="{color: '#9BBB00', secondaryColor: '#E43B11'}"/>
+        <span>Works</span>
+      </div>
+      <div class="userItem__permissions__item">
+        <input ng-change="change()" type="checkbox" ng-model="config.permissions.statistics" class="js-switch" checked ui-switch="{color: '#9BBB00', secondaryColor: '#E43B11'}"/>
+        <span>Statistics</span>
+      </div>
+    </div>
+
+    <div class="cuserItem__permissions__box">
+      <div class="userItem__permissions__item">
+        <input ng-change="change()" type="checkbox" ng-model="config.permissions.upload" class="js-switch" checked ui-switch="{color: '#9BBB00', secondaryColor: '#E43B11'}"/>
+        <span>Upload</span>
+      </div>
+      <div class="userItem__permissions__item">
+        <input ng-change="change()" type="checkbox" ng-model="config.permissions.users" class="js-switch" checked ui-switch="{color: '#9BBB00', secondaryColor: '#E43B11'}"/>
+        <span>Users</span>
+      </div>
+    </div>
+    
+  </div>
+
+</div>
+
+
+
+<!--   <span>{[{ config._id }]}</span>
+<span>{[{ config.permissions }]}</span> -->

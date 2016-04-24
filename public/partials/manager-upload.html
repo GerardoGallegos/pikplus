@@ -1,0 +1,103 @@
+  <div class="panel">
+    <!-- <button ng-click="log()">LOG</button> -->
+
+    <!-- UP ZONE
+    ====================================================== -->
+    <section ng-show="muestra === 1" class="animate-show">
+      <div up-zone ></div>
+    </section>
+
+
+    <!-- UP DATA 
+    ======================================================-->
+    <section class="upload-data" ng-show="muestra === 2" class="animate-show">
+        <input type="checkbox" ng-model="original" class="js-switch" checked ui-switch="{color: '#9BBB00', secondaryColor: '#E43B11'}"/>
+        <!-- GRUPO   -->
+        <tags-input max-tags="1" id="upData1" on-tag-added="chargeGroupData()" ng-model="group" placeholder="Group" add-on-blur="true" add-on-enter="true" >
+          <auto-complete source="loadGroup('/api/es/group/', $query)" template ="group-template" ></auto-complete>
+        </tags-input>
+
+        <!-- BUCKET  -->
+        <tags-input max-tags="1" ng-model="bucket" placeholder="Bucket / Categoria" add-on-enter="false" >
+          <auto-complete  source="loadItems('/api/es/buckets/', $query)"></auto-complete>
+        </tags-input>
+        <button ng-click="navega(3)">NEXT</button>
+        <img class="upload-data__img" src="{[{preview}]}">
+    </section>
+
+    <!-- UP DATA 2
+    ======================================================-->
+    <section class="upload-data2" ng-show="muestra === 3">
+      <div class="upload-data2__subpanel">
+            <span class="upload-data2__title">Español</span>
+
+            <!-- NAME  ES-->
+            <tags-input ng-model="name_es" max-tags="1" placeholder="Nombre Unico" add-on-enter="false" replace-spaces-with-dashes="false" enable-editing-last-tag="true">
+              <auto-complete source="loadItems('/api/es/works/', $query)" template ="name-template"></auto-complete>
+            </tags-input>
+
+            <!-- TAGS  ES-->
+            <tags-input ng-model="tags_es" placeholder="Etiquetas" add-on-enter="false" replace-spaces-with-dashes="false">
+              <auto-complete source="loadItems('/api/es/tags/', $query)"></auto-complete>
+            </tags-input>
+
+            <!-- DESCRIPCION  ES-->
+            <textarea rows="4" cols="50" id="description_es" placeholder="Describe el trabajo aqui...">Esto es la descripcion Español</textarea>
+      </div>
+
+      <div class="upload-data2__subpanel">
+          <span class="upload-data2__title">English</span>
+
+          <!-- NAME  EN-->
+          <tags-input ng-model="name_en" max-tags="1" placeholder="Unique Name" add-on-enter="true" replace-spaces-with-dashes="false" enable-editing-last-tag="true">
+              <auto-complete source="loadItems('/api/en/works/', $query)" template ="name-template"></auto-complete>
+          </tags-input>
+          
+          <!-- TAGS  EN-->
+          <tags-input ng-model="tags_en" placeholder="tags" add-on-enter="false" replace-spaces-with-dashes="false">
+              <auto-complete source="loadItems('/api/en/tags/', $query)"></auto-complete>
+          </tags-input>
+
+          <!-- DESCRIPTION EN-->
+          <textarea rows="4" cols="50" id="description_en" placeholder="Describe the work here...">This is an description of english</textarea>
+      </div>       
+      <button ng-click="navega(4)">PREVIEW</button>
+      <img class="upload-data__img" src="{[{preview}]}">
+    </section>
+
+    <!-- PREVIEW
+    ======================================================-->
+    <section class="upload-preview" ng-show="muestra === 4">
+        <div>
+          <span>group: {[{ group[0].text }]}</span>
+          <span>bucket: {[{ bucket[0].text }]}</span>
+          <span>Name Español: {[{ name_es[0].text }]}</span>
+          <span>Name English: {[{ name_en[0].text }]}</span>
+          <span>Description Español: {[{ description_es[0].text }]}</span>
+        </div>
+        <button ng-click="navega(5);submit()">CONFIRM</button>
+        <img class="upload-data__img" src="{[{preview}]}">
+    </section>
+
+    <!-- LOGS
+    ======================================================-->
+    <section class="upload-uploading" ng-show="muestra === 5">
+      <span class="upload-uploading__title">Upload Logs</span>
+      <ul class="checklist" id="logs">
+      </ul>
+    </section>
+
+    <section class="upload-done" ng-show="muestra === 6">
+    <span class="upload-done__title">Work has been Uploaded Successfully!</span>
+      
+      <div class="upload-done__box">
+        <img class="upload-done__img" src="{[{preview}]}">
+        <img class="upload-done__stars" src="img/done-stars.svg">
+      </div>
+        
+      <div class="upload-done__box">
+        <button class="upload-done__button-ball" ng-click="addInGroup()" >+</button>
+        <button class="upload-done__button-plane" ng-click="addNewWork()" >New Work</button>
+      </div>
+
+    </section>

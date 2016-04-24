@@ -1,0 +1,10 @@
+<div class="item-work">
+  <div class="item-work__bg"></div>
+  <img class="item-work__img" src="{[{config.src.public.es.small}]}">
+  <div class="item-work__ball-{[{config.approved}]}"></div>
+  <div class="item-work__buttons">
+     <button ng-click="show_work_details(config)">(*)</button>
+     <input ng-change="checkboxChange()" type="checkbox" ng-model="config.approved" class="js-switch" checked ui-switch="{color: '#9BBB00', secondaryColor: '#E43B11'}"/>
+     <button ng-click="deleteWork()">Delete</button>
+  </div>
+</div>

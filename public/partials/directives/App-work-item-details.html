@@ -1,0 +1,39 @@
+  <div class="work-details" ng-show="show">
+    <span ng-click="showDetails()" style="color:#FFF; font-size:30px" class="work-details__close">X</span>
+    <div class="work-details__panel"  >
+
+      <img src="{[{ workData.src.public.es.medium }]}">
+      <div class="work-details__buttons">
+      <h1>{[{workData.approved}]} {[{workData.original}]}</h1>
+        <input  ng-change="approvedWork()" type="checkbox"  ng-model="workData.approved"   class="js-switch" checked ui-switch="{color: '#9BBB00', secondaryColor: '#E43B11'}"/>
+        <input  ng-change="originalWork()" type="checkbox"  ng-model="workData.original"   class="js-switch" checked ui-switch="{color: '#9BBB00', secondaryColor: '#E43B11'}"/>
+        <button ng-click="deleteWork()" class="red">Delete</button>
+        <button ng-click="editWork()" class="blue">Update</button>
+      </div>
+
+      <div class="contenedor">    
+        <input class="inp big" type="text" ng-model="workData.name.es"> 
+        <input class="inp small" type="text" ng-model="workData.description.es"> 
+        <!-- TAGS  ES-->
+        <tags-input ng-model="tags_es" placeholder="Etiquetas" add-on-enter="false" replace-spaces-with-dashes="false">
+            <auto-complete source="loadItems('/api/es/tags/', $query)"></auto-complete>
+        </tags-input>
+      </div>
+    
+      <div class="contenedor"> 
+        <input class="inp big" type="text" ng-model="workData.name.en"> 
+        <input class="inp small" type="text" ng-model="workData.description.en"> 
+        <!-- TAGS  EN-->
+        <tags-input ng-model="tags_en" placeholder="Etiquetas" add-on-enter="false" replace-spaces-with-dashes="false">
+            <auto-complete source="loadItems('/api/es/tags/', $query)"></auto-complete>
+        </tags-input>
+      </div>
+
+      <span class="logs">LOGS</span>
+      <div class="log" ng-repeat="log in workData.logs | orderBy : orderBy:'-log.date'">
+        <span class="log__user">{[{ log.user }]}</span><span class="log__date">{[{ log.date | timeago }]}</span>
+        <div class="log__message">{[{ log.log }]}</div>
+      </div>
+
+    </div>  
+  </div>
