@@ -1,15 +1,13 @@
-//  CONEXION A BASE DE DATOS
+//  Conexion a base de datos
 
-var mongoose = require('mongoose');
+const mongoose = require('mongoose')
 
-module.exports = function (DBNAME, mongoURI) {
-
-  console.log('DB____' +  DBNAME)
-  return mongoose.createConnection('mongodb://localhost/' + DBNAME, function (err) {
-    if(err) console.log(err);
-    else {
-      console.log('CONECTADO A BD EXITOSAMENTE!' + DBNAME);
+module.exports = function (DB_NAME, mongoURI) {
+  console.log('DB____' + DB_NAME)
+  return mongoose.createConnection('mongodb://localhost/' + DB_NAME, function (err) {
+    if (err) {
+      console.log(err)
+      throw (err)
     }
-  });
-
-};
+  })
+}

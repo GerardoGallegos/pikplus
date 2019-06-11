@@ -6,10 +6,9 @@
     sale    temp/proyectName_/
 */
 
-
-let populatePath = (path, rep) => {
-  let key =  new RegExp(/\*\*\*\*/g);
-  return path.replace(key, rep);
+const populatePath = (path, rep) => {
+  const key = new RegExp(/\*\*\*\*/g)
+  return path.replace(key, rep)
 }
 
-module.exports = populatePath;
+module.exports = populatePath

@@ -1,29 +1,27 @@
 'use strict'
 
-const fs = require('fs'),
-      Promise = require('bluebird');
+const fs = require('fs')
+const Promise = require('bluebird')
 
-function copyFile(source, target) {
+function copyFile (source, target) {
+  return new Promise((resolve, reject) => {
+    const rd = fs.createReadStream(source)
 
-  return new Promise((done, reject) => {
-    let rd = fs.createReadStream(source)
-
-    rd.on("error", (err)=> {
+    rd.on('error', (err) => {
       reject(err)
     })
 
-    let wr = fs.createWriteStream(target)
-    wr.on("error", (err)=> {
+    const wr = fs.createWriteStream(target)
+    wr.on('error', (err) => {
       reject(err)
     })
 
-    wr.on("close", (ex) => {
-      done()
+    wr.on('close', (ex) => {
+      resolve()
     })
 
-    rd.pipe(wr);  
+    rd.pipe(wr)
   })
-
 }
 
 module.exports = copyFile

@@ -1,15 +1,18 @@
 'use strict'
 
-const mkdirp = require('mkdirp'),
-      Promise = require('bluebird');
+const mkdirp = require('mkdirp')
+const Promise = require('bluebird')
 
 function createFolder (path) {
-  return new Promise( (done, reject) => {
-      mkdirp(path, (err) => {
-          if(err) reject({ error : err, detail : `rror al crear el Folder mkdirp ${path}` });
-          done('Folders creados::> ' + path);
-      })
+  return new Promise((resolve, reject) => {
+    mkdirp(path, (err) => {
+      const error = new Error(`Error al crear el Folder mkdirp ${path}`)
+      error.error = err
+
+      if (err) reject(error)
+      resolve('Folders creados::> ' + path)
+    })
   })
 }
 
-module.exports = createFolder;
+module.exports = createFolder

@@ -1,18 +1,18 @@
 'use strict'
 
-const fs = require('fs'),
-      Promise = require('bluebird');
+const fs = require('fs')
+const Promise = require('bluebird')
 
 /*  Sube los archivos
 */
 
 function uploadFile (filePath, savePath) {
-  return new Promise ((done, reject) => {
+  return new Promise((resolve, reject) => {
     fs.rename(filePath, savePath, (err) => {
-      if(err) reject({error : err, detail : `Error al subir archivo: ${filePath}`});
-      done()
+      if (err) reject(err)
+      resolve()
     })
   })
 }
 
-module.exports = uploadFile;
+module.exports = uploadFile

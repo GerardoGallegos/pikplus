@@ -1,7 +1,7 @@
 'use strict'
 
 function getExt (name) {
-  let cleanName = name.substr(-4)
+  const cleanName = name.substr(-4)
   return cleanName.substring(cleanName.search(/\./g) + 1, cleanName.length)
 }
 

@@ -1,7 +1,7 @@
 'use strict'
 
-const Promise = require('bluebird'),
-  each = require('async-each');
+const Promise = require('bluebird')
+const each = require('async-each')
 
 /*
   Este modulo se encarga de guardar llas nuevas tags en la BD
@@ -10,50 +10,49 @@ const Promise = require('bluebird'),
   @param [tempSrc] - {} -
 */
 
-
 module.exports = function (body, Models, tempSrc) {
-  return new Promise((done, reject) => {
+  return new Promise((resolve, reject) => {
     // ESPAÑOL
     addTags(body.tags_es, Models.TagsEs)
 
     // ENGLISH
-    .then(() => {
-      return addTags(body.tags_en, Models.TagsEn)
-    })
+      .then(() => {
+        return addTags(body.tags_en, Models.TagsEn)
+      })
 
-    //OK
-    .then(() => {
-      done(tempSrc)
-    })
+    // OK
+      .then(() => {
+        resolve(tempSrc)
+      })
 
     // ERROR
-    .catch((err) => {
-      console.log(err)
-    })
-
+      .catch((err) => {
+        console.log(err)
+      })
   })
 }
 
-
 function addTags (tagsStr, TagsModel) {
-  return new Promise((done, reject) => {
-    let arrayTags = tagsStr.toLowerCase().split(',');
+  return new Promise((resolve, reject) => {
+    const arrayTags = tagsStr.toLowerCase().split(',')
 
     each(arrayTags, (tag, next) => {
-      TagsModel.find({ text : tag }, (err, tagsResult) => {
-        if(err) reject({ error : err, detail : 'Error al buscar Tags en BD'})
-        // Ya existe tag con ese nombre  
-        if(tagsResult.length > 0) {
+      TagsModel.find({ text: tag }, (err, tagsResult) => {
+        console.log('Error al buscar Tags en BD')
+        if (err) reject(err)
+        // Ya existe tag con ese nombre
+        if (tagsResult.length > 0) {
           next()
         }
         // Se agrega nuevo tag
-        if(tagsResult.length === 0) {
-          let newTag = new TagsModel({
-            text : tag
+        if (tagsResult.length === 0) {
+          const newTag = new TagsModel({
+            text: tag
           })
 
           newTag.save((err, docs) => {
-            if(err) reject({ error : err, detail : 'Error al guartas new Tag en BD'})
+            console.log('Error al guartas new Tag en BD')
+            if (err) reject(err)
             console.log('Se agrego nuevo tag:: ' + docs)
             next()
           })
@@ -61,9 +60,12 @@ function addTags (tagsStr, TagsModel) {
       })
     },
 
-    //Callback
+    // Callback
     (err) => {
-      done()
+      if (err) {
+        throw err
+      }
+      resolve()
     })
   })
 }

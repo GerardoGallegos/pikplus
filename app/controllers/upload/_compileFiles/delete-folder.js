@@ -1,17 +1,16 @@
 'use strict'
 
-const Promise = require('bluebird'),
-      del = require('delete');
-
+const Promise = require('bluebird')
+const del = require('delete')
 
 function _deleteFolder (path) {
-  return new Promise ((done, reject) => {
+  return new Promise((resolve, reject) => {
     del([path], (err) => {
-      if (err) reject({ error : err, detail : 'Error al eliminar folder modulo[delete-folder]'})
-      done()
+      const error = new Error('Error al eliminar folder modulo[delete-folder]')
+      if (err) reject(error)
+      resolve()
     })
   })
 }
-
 
 module.exports = _deleteFolder

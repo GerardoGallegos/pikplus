@@ -1,20 +1,19 @@
-'use strict';
+'use strict'
 
-const Promise = require('bluebird'),
-    each = require('async-each'),
-    populatePath = require('./populate-path'),
-    uploadFile = require('./upload-file'),
-    getExt = require('./get-ext'),
-    createFolder = require('./create-folder'),
-    up = require('./up'),
-    configData = require('./data-config');
-
+const Promise = require('bluebird')
+const each = require('async-each')
+const populatePath = require('./populate-path')
+const uploadFile = require('./upload-file')
+const getExt = require('./get-ext')
+const createFolder = require('./create-folder')
+const up = require('./up')
+const configData = require('./data-config')
 
 /*
   Este modulo se encarga de subir los archivos a la carpeta temporal _temp
-  cuando se cumple la promesa retorna Objeto con informacion de las rutas de 
+  cuando se cumple la promesa retorna Objeto con informacion de las rutas de
   los archivos recien subidos
-  
+
   @param[filesArray] - Objeto con archivos de req.files.files
   @param[rootFolder] - Nombre de ruta raiz de el folder a subir
   @param[proyectName] - Nombre del proyecto, viene desde el cliente
@@ -23,54 +22,50 @@ const Promise = require('bluebird'),
 */
 
 module.exports = function (filesArray, rootFolder, proyectName, workData) { //, next
-
-  return new Promise ((done, reject) => {
-    
+  console.log(filesArray)
+  return new Promise((resolve, reject) => {
     var FilesData = {}
 
     each(filesArray, (file, next) => {
-          let savePath =  `${populatePath(rootFolder, proyectName)}_temp/`,
-              fileName =  `${proyectName}.${getExt(file.originalFilename)}`,
-              savePathFile = `${savePath}${fileName}`;
+      const savePath = `${populatePath(rootFolder, proyectName)}_temp/`
+      const fileName = `${proyectName}.${getExt(file.originalFilename)}`
+      const savePathFile = `${savePath}${fileName}`
 
-          // Crea la estructura de folders
-          createFolder(savePath)
+      // Crea la estructura de folders
+      createFolder(savePath)
 
-          // Sube el archivo
-          .then(() => {
-            return uploadFile (file.path, savePathFile)
-          })
+      // Sube el archivo
+        .then(() => {
+          return uploadFile(file.path, savePathFile)
+        })
 
-          // Se almacena informacion en objeto fileData
-          .then(() => {
-            fileData(file, FilesData, savePathFile, next)
-          })
-        }, (err) => {
-          if(err) reject(err)
-            
-          // Archivos subidos exitosamente
-          // Procesamiento de Archivos
-          up(FilesData, configData.rootFolder, configData.folders, proyectName, workData)
-          .then((objFilesCompiled) => {
-            done(objFilesCompiled)
-          })
-        }
+      // Se almacena informacion en objeto fileData
+        .then(() => {
+          fileData(file, FilesData, savePathFile, next)
+        })
+    }, (err) => {
+      if (err) reject(err)
+
+      // Archivos subidos exitosamente
+      // Procesamiento de Archivos
+      up(FilesData, configData.rootFolder, configData.folders, proyectName, workData)
+        .then((objFilesCompiled) => {
+          resolve(objFilesCompiled)
+        })
+    }
     )
   })
 }
 
-
-
 function fileData (file, FilesData, Path, next) {
-
-  let fileExt = getExt(file.name)
+  const fileExt = getExt(file.name)
 
   if (fileExt === 'png' || fileExt === 'jpg') {
     FilesData.png = {
       name: file.name,
       path: Path
     }
-    next();
+    next()
   }
 
   if (fileExt === 'ai') {
@@ -78,7 +73,7 @@ function fileData (file, FilesData, Path, next) {
       name: file.name,
       path: Path
     }
-    next();
+    next()
   }
 
   if (fileExt === 'eps') {
@@ -86,7 +81,7 @@ function fileData (file, FilesData, Path, next) {
       name: file.name,
       path: Path
     }
-    next();
+    next()
   }
 
   if (fileExt === 'psd') {
@@ -94,7 +89,6 @@ function fileData (file, FilesData, Path, next) {
       name: file.name,
       path: Path
     }
-    next();
+    next()
   }
-
 }

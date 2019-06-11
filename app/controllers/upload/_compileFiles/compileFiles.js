@@ -1,8 +1,8 @@
 'use strict'
 
-const uploadFiles = require('./upload-files'),
-      Promise = require('bluebird'),
-      configData = require('./data-config');
+const uploadFiles = require('./upload-files')
+const Promise = require('bluebird')
+const configData = require('./data-config')
 
 /*
   @param [proyectName] req.body.title;
@@ -10,12 +10,12 @@ const uploadFiles = require('./upload-files'),
 */
 
 function _compile (files, proyectName, workData) {
-  return new Promise((done, reject) => {
-    //Se suben los archivos a folder temporal _uploads
+  return new Promise((resolve, reject) => {
+    // Se suben los archivos a folder temporal _uploads
     uploadFiles(files, configData.rootFolder, proyectName, workData)
-    .then((objFilesCompiled) => {
-        done(objFilesCompiled)
-    })
+      .then((objFilesCompiled) => {
+        resolve(objFilesCompiled)
+      })
   })
 }
 

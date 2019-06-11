@@ -1,16 +1,14 @@
 'use strict'
 
-
-const express = require('express'),
-  Models = require('../models/allModels'),
-  search = require('./works/partial-search'),
-  uploadWork = require('./upload/upload-work'),
-  works = require('./works/api-works'),
-  tags = require('./works/api-tags'),
-  buckets = require('./works/api-buckets'),
-  groups = require('./works/api-groups'),
-  users = require('./works/users'),
-  auth = require('./auth/auth');
+const express = require('express')
+const search = require('./works/partial-search')
+const uploadWork = require('./upload/upload-work')
+const works = require('./works/api-works')
+const tags = require('./works/api-tags')
+const buckets = require('./works/api-buckets')
+const groups = require('./works/api-groups')
+const users = require('./works/users')
+const auth = require('./auth/auth')
 
 /*
   API REST WORKS
@@ -18,113 +16,83 @@ const express = require('express'),
 */
 
 // get an instance of the router for api routes
-const apiRoutes = express.Router(); 
+const apiRoutes = express.Router()
 
+apiRoutes.get('/', (req, res) => {
+  res.render('manager-home.html')
+})
 
-  apiRoutes.get('/', (req, res) => {
-    res.render('manager-home.html')
-  })
+// AUTHORIZATION
 
-  // AUTHORIZATION
+apiRoutes
+  .post('/api/authenticate', auth.authenticate)
+  .post('/api/signup',  users.newUser)
 
-  apiRoutes
-    .post('/api/authenticate', auth.authenticate)
-    .post('/api/signup', auth.checkAuth(['users']),  users.newUser)
+// USERS MANAGEMENT
+apiRoutes.route('/api/users')
+  .get(auth.checkAuth(['users']), users.getAll)
+  .post(auth.checkAuth(['users']), users.newUser)
 
+apiRoutes.route('/api/users/:id')
+  .get(auth.checkAuth(['users']), users.getUser)
+  .put(auth.checkAuth(['users']), users.putUser)
+  .delete(auth.checkAuth(['users']), users.deleteUser)
 
+// WORKS MANAGEMENT
+apiRoutes.route('/api/works')
+  .get(auth.checkAuth(['works']), works.getWorks)
+  .post(auth.checkAuth(['upload']), uploadWork)
 
-  // USERS MANAGEMENT
-  apiRoutes.route('/api/users')
-    .get(auth.checkAuth(['users']), users.getAll)
-    .post(auth.checkAuth(['users']), users.newUser)
+apiRoutes.route('/api/works/:id')
+  .get(auth.checkAuth(['works']), works.getWork)
+  .put(auth.checkAuth(['works']), works.putWork)
+  .delete(auth.checkAuth(['works']), works.deleteWork)
 
-  apiRoutes.route('/api/users/:id')
-    .get(auth.checkAuth(['users']), users.getUser)       
-    .put(auth.checkAuth(['users']), users.putUser)
-    .delete(auth.checkAuth(['users']), users.deleteUser)
+apiRoutes.put('/api/works/approved/:id', auth.checkToken, works.setApproved)
+apiRoutes.put('/api/works/original/:id', auth.checkToken, works.setOriginal)
 
+apiRoutes
+  .get('/api/:language/:model/', auth.checkAuth(['upload']), search.getAll)
+  .get('/api/:language/:model/:partialText', auth.checkAuth(['upload']), search.partial)
+  .get('/api/:language/:model/:text/exact', auth.checkAuth(['upload']), search.exact)
 
+// TAGS
 
-  // WORKS MANAGEMENT
-  apiRoutes.route('/api/works')
-    .get(auth.checkAuth(['works']), works.getWorks)
-    .post(auth.checkAuth(['upload']), uploadWork)
+apiRoutes.route('/management/:language/tags/stadistics')
+  .get(tags.getTagsStatistics)
 
+apiRoutes.route('/management/:language/tags')
+  .get(tags.getTags)
+  .post(tags.newTag)
 
-  apiRoutes.route('/api/works/:id')
-    .get(auth.checkAuth(['works']), works.getWork)
-    .put(auth.checkAuth(['works']), works.putWork)
-    .delete(auth.checkAuth(['works']), works.deleteWork)
+apiRoutes.route('/management/:language/tags/:id')
+  .get(tags.getTag)
+  .put(tags.putTag)
+  .delete(tags.deleteTag)
 
-  apiRoutes.put('/api/works/approved/:id', auth.checkToken, works.setApproved)
-  apiRoutes.put('/api/works/original/:id', auth.checkToken, works.setOriginal)
+// BUCKETS
+apiRoutes.route('/management/:language/buckets')
+  .get(buckets.getBuckets)
+  .post(buckets.newBucket)
 
-  apiRoutes
-    .get('/api/:language/:model/', auth.checkAuth(['upload']), search.getAll)
-    .get('/api/:language/:model/:partialText', auth.checkAuth(['upload']), search.partial)
-    .get('/api/:language/:model/:text/exact', auth.checkAuth(['upload']), search.exact)
+apiRoutes.route('/management/:language/buckets/:id')
+  .get(buckets.getBucket)
+  .put(buckets.putBucket)
+  .delete(buckets.deleteBucket)
 
+// GROUPS
+apiRoutes.route('/management/:language/groups')
+  .get(groups.getGroups)
+  .post(groups.newGroup)
 
-
-  // TAGS
-
-  apiRoutes.route('/management/:language/tags/stadistics')
-    .get(tags.getTagsStatistics)
-
-  apiRoutes.route('/management/:language/tags')
-    .get(tags.getTags)
-    .post(tags.newTag)
-
-  apiRoutes.route('/management/:language/tags/:id')
-    .get(tags.getTag)
-    .put(tags.putTag)
-    .delete(tags.deleteTag)
-
-  // BUCKETS
-  apiRoutes.route('/management/:language/buckets')
-    .get(buckets.getBuckets)
-    .post(buckets.newBucket)
-
-  apiRoutes.route('/management/:language/buckets/:id')
-    .get(buckets.getBucket)
-    .put(buckets.putBucket)
-    .delete(buckets.deleteBucket)
-
-  // GROUPS
-  apiRoutes.route('/management/:language/groups')
-    .get(groups.getGroups)
-    .post(groups.newGroup)
-
-  apiRoutes.route('/management/:language/groups/:id')
-    .get(groups.getGroup)
-    .put(groups.putGroup)
-    .delete(groups.deleteGroup)
-
-
-
-
+apiRoutes.route('/management/:language/groups/:id')
+  .get(groups.getGroup)
+  .put(groups.putGroup)
+  .delete(groups.deleteGroup)
 
 module.exports = apiRoutes
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  /*****************************************************************
+/*****************************************************************
    |__________ URL ___________| METHOD |        DESCRIPTION         |
    ________________________________________________________________
    |                         |        |                            |
