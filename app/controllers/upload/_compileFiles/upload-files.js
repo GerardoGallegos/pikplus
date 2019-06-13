@@ -26,6 +26,10 @@ module.exports = function (filesArray, rootFolder, proyectName, workData) { //, 
   return new Promise((resolve, reject) => {
     var FilesData = {}
 
+    if (!Array.isArray(filesArray)) {
+      filesArray = [filesArray]
+    }
+
     each(filesArray, (file, next) => {
       const savePath = `${populatePath(rootFolder, proyectName)}_temp/`
       const fileName = `${proyectName}.${getExt(file.originalFilename)}`
