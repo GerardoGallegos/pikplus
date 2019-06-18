@@ -1,31 +1,55 @@
 'use strict'
 
-const DB = require('../connections/DB')(process.env.DB_USERS)
+// const DB = require('../connections/DB')(process.env.DB_USERS)
 const mongoose = require('mongoose')
+const { isEmail } = require('validator')
+const uniqueValidator = require('mongoose-unique-validator')
+const bcrypt = require('bcryptjs')
 
-function User (collectionName) {
-  // Esquema de Group
+const UserSchema = new mongoose.Schema({
+  username: { type: String, unique: true, required: true },
+  email: {
+    type: String,
+    lowercase: true,
+    unique: true,
+    trim: true,
+    required: [true, 'No puede estar es blanco'],
+    validate: [isEmail, 'El email ingresado es invalido'],
+    maxlength: [100, 'El email debe de tener maximo 100 caracteres'],
+    index: true
+  },
+  name: { type: String, required: true },
+  created: { type: Date, default: Date.now },
+  role: { type: String, enum: ['member', 'admin'], default: 'member' },
+  avatar: String,
+  password: { type: String, required: true }
+}, { timestamps: true })
 
-  const User = DB.model('USERS', new mongoose.Schema({
-    username: { type: String, unique: true, required: true },
-    name: { type: String, required: true },
-    created: { type: Date, default: Date.now },
-    permissions: {
-      works: { type: Boolean, default: false },
-      upload: { type: Boolean, default: false },
-      statistics: { type: Boolean, default: false },
-      users: { type: Boolean, default: false }
-    },
-    logs: [{
-      log: String,
-      user: String,
-      date: { type: Date, default: Date.now }
-    }],
-    password: { type: String, required: true }
-  }))
+UserSchema.plugin(uniqueValidator, { message: 'Ya esta esta en uso' })
 
-  // MODEL
-  return User
+UserSchema.pre('save', function (next) {
+  const user = this
+
+  if (!user.isModified('password')) return next()
+
+  bcrypt.genSalt(10, (err, salt) => {
+    if (err) return next()
+
+    bcrypt.hash(user.password, salt, (err, hash) => {
+      if (err) return next(err)
+      user.password = hash
+      next()
+    })
+  })
+})
+
+UserSchema.methods.checkPassword = function (password) {
+  return new Promise((resolve, reject) => {
+    bcrypt.compare(password, this.password, function (err, res) {
+      if (err) return reject(err)
+      resolve(res)
+    })
+  })
 }
 
-module.exports = User()
+module.exports = mongoose.model('User', UserSchema)
