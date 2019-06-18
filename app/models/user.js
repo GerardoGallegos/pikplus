@@ -1,12 +1,12 @@
 'use strict'
 
 // const DB = require('../connections/DB')(process.env.DB_USERS)
-const mongoose = require('mongoose')
+const { Schema, model } = require('mongoose')
 const { isEmail } = require('validator')
 const uniqueValidator = require('mongoose-unique-validator')
 const bcrypt = require('bcryptjs')
 
-const UserSchema = new mongoose.Schema({
+const UserSchema = new Schema({
   username: { type: String, unique: true, required: true },
   email: {
     type: String,
@@ -52,4 +52,4 @@ UserSchema.methods.checkPassword = function (password) {
   })
 }
 
-module.exports = mongoose.model('User', UserSchema)
+module.exports = model('User', UserSchema)

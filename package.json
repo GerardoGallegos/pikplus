@@ -29,6 +29,7 @@
     "read-dir-files": "^0.1.1",
     "request": "^2.88.0",
     "scmp": "^2.0.0",
+    "shortid": "^2.2.15",
     "socket.io": "^2.3.0",
     "swig": "^1.4.2",
     "util": "^0.12.1",
