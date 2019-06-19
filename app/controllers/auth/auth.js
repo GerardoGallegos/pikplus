@@ -11,7 +11,17 @@ const getRandomUsername = (email) => {
 
 exports.authenticate = async (req, res, next) => {
   try {
-    const { email, password } = req.body
+    if (!req.body.auth) {
+      return res.json({
+        error: true,
+        errorMessage: 'Invalid Auth Object',
+        path: 'email',
+        status: 422
+      })
+    }
+
+    const { email, password } = req.body.auth
+
     if (!email) {
       return res.json({
         error: true,
@@ -20,6 +30,7 @@ exports.authenticate = async (req, res, next) => {
         status: 422
       })
     }
+
     if (!password) {
       return res.json({
         error: true,
@@ -29,10 +40,10 @@ exports.authenticate = async (req, res, next) => {
       })
     }
 
-    if (password.length < 8) {
+    if (password.length < 6) {
       return res.json({
         error: true,
-        errorMessage: 'La contraseña debe ser de minimo 8 caracteres',
+        errorMessage: 'La contraseña debe ser de minimo 6 caracteres',
         path: 'password',
         status: 422
       })
@@ -67,7 +78,7 @@ exports.authenticate = async (req, res, next) => {
     const { token, refreshToken } = getTokens(user)
 
     res.json({
-      user: user.toJSON(),
+      // user: user.toJSON(),
       error: null,
       token,
       refreshToken,
