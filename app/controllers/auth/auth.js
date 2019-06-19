@@ -1,127 +1,175 @@
 'use strict'
 
-const cyp = require('../../util/cyp')
-const User = require('../../models/user')
-const jwt = require('jsonwebtoken')
-const SECRET = 'Mega Secret key'
+const sanitize = require('mongo-sanitize')
+const parseFullName = require('parse-full-name').parseFullName
+const { getTokens } = require('../../middlewares/auth')
+const models = require('../../models')
 
-exports.authenticate = function (req, res) {
-  User.findOne({
-    username: req.body.username
-  },
+const getRandomUsername = (email) => {
+  return email.split('@')[0] + '_' + Math.floor(Math.random() * 1000)
+}
 
-  (err, user) => {
-    // ERR
-    if (err) return res.status(500).send('Problemas con servidor')
-    // NO USER
+exports.authenticate = async (req, res, next) => {
+  try {
+    const { email, password } = req.body
+    if (!email) {
+      return res.json({
+        error: true,
+        errorMessage: 'Email es requerido',
+        path: 'email',
+        status: 422
+      })
+    }
+    if (!password) {
+      return res.json({
+        error: true,
+        errorMessage: 'La contraseña es requerida',
+        path: 'email',
+        status: 422
+      })
+    }
+
+    if (password.length < 8) {
+      return res.json({
+        error: true,
+        errorMessage: 'La contraseña debe ser de minimo 8 caracteres',
+        path: 'password',
+        status: 422
+      })
+    }
+
+    const user = await models.User.findOne({
+      email: sanitize(email)
+    })
+
+    // User not found
     if (!user) {
-      res.status(401).json({ success: false, message: 'Authentication failed. User not found.' })
-    }
-    // OK USER
-    if (user) {
-      if (user.password !== cyp(req.body.password, req.body.username)) {
-        // PASS INVALID
-        res.status(401).json({
-          success: false, message: 'Authentication failed. Pass Invalid'
-        })
-      } else if (user.password === cyp(req.body.password, req.body.username)) {
-        // PASS OK
-        const dataExposed = {
-          name: user.name,
-          permissions: user.permissions
-        }
-        const token = jwt.sign(dataExposed, SECRET, {
-          expiresIn: 6000 // expires in 24 hours
-        })
-
-        res.status(200)
-          .json({
-            success: true,
-            message: 'Enjoy your token!',
-            token: token
-          })
-      }
-    }
-  })
-}
-
-exports.checkAuth = function (permissions) {
-  return function (req, res, next) {
-    // Check header or url parameters or post parameters for token
-    var token = req.body.token || req.query.token || req.headers['x-access-token']
-
-    // Decode token
-    if (token) {
-      // Verifies secret and checks exp
-      jwt.verify(token, SECRET, function (err, decoded) {
-        if (err) {
-          return res.status(401).json({ success: false, message: 'Failed to authenticate token.' })
-        } else {
-          console.log(permissions, decoded.permissions)
-          console.log(hasAccess(permissions, decoded.permissions))
-          if (hasAccess(permissions, decoded.permissions)) {
-            // Has access
-            console.log(permissions, decoded.permissions)
-            req.decoded = decoded
-            next()
-          } else {
-            // No access
-            res.status(401).send({
-              success: false,
-              message: 'No tienes permiso para entrar a esta area'
-            })
-          }
-        }
-      })
-    } else {
-      // if there is no token
-      // return an error
-      return res.status(401).send({
-        success: false,
-        message: 'No token provided.'
+      return res.json({
+        error: true,
+        errorMessage: 'No tenemos un registro con este email',
+        path: 'email',
+        status: 422
       })
     }
-  }
 
-  function hasAccess (arrayConfig, objectToken) {
-    let authorized = false
+    const isValid = await user.checkPassword(password)
 
-    arrayConfig.forEach((permiso) => {
-      for (const key in objectToken) {
-        if (permiso === key && objectToken[key] === true || objectToken[key] === 'true') {
-          authorized = true
-        }
-      }
+    // Invalid Pass
+    if (!isValid) {
+      return res.json({
+        error: true,
+        errorMessage: 'El email o la password son invalidas',
+        path: 'email/password',
+        status: 422
+      })
+    }
+
+    const { token, refreshToken } = getTokens(user)
+
+    res.json({
+      user: user.toJSON(),
+      error: null,
+      token,
+      refreshToken,
+      errorMessage: ''
     })
-
-    return authorized
+  } catch (error) {
+    next(error)
   }
 }
 
-// route middleware to verify a token
-exports.checkToken = function (req, res, next) {
-  // check header or url parameters or post parameters for token
-  var token = req.body.token || req.query.token || req.headers['x-access-token']
+exports.signup = async (req, res, next) => {
+  try {
+    if (!req.body.user) {
+      return res.json({
+        error: true,
+        errorMessage: 'Invalid user object',
+        status: 422,
+        path: 'user'
+      })
+    }
 
-  // decode token
-  if (token) {
-    // verifies secret and checks exp
-    jwt.verify(token, SECRET, function (err, decoded) {
-      if (err) {
-        return res.status(401).json({ success: false, message: 'Failed to authenticate token.' })
-      } else {
-        // if everything is good, save to request for use in other routes
-        req.decoded = decoded
-        console.log(req.decoded)
-        next()
-      }
+    const { email, password, fullname } = req.body.user
+    if (!fullname) {
+      return res.json({
+        error: true,
+        errorMessage: 'El nombre es requerido',
+        status: 422,
+        path: 'fullname'
+      })
+    }
+    if (!email) {
+      return res.json({
+        error: true,
+        errorMessage: 'Email es requerido',
+        path: 'email',
+        status: 422
+      })
+    }
+    if (!password) {
+      return res.json({
+        error: true,
+        errorMessage: 'La contraseña es requerida',
+        path: 'password',
+        status: 422
+      })
+    }
+
+    if (password.length < 6) {
+      return res.json({
+        error: true,
+        errorMessage: 'La contraseña debe ser de minimo 6 caracteres',
+        path: 'password',
+        status: 422
+      })
+    }
+
+    if (fullname.length < 3) {
+      return res.json({
+        error: true,
+        errorMessage: 'El nombre debe tener minimo 3 caracteres',
+        path: 'fullname',
+        status: 422
+      })
+    }
+
+    const userExist = await models.User.findOne({
+      email: sanitize(email)
     })
-  } else {
-    // if there is no token
-    // return an error
-    return res.status(401).send({
-      success: false,
-      message: 'No token provided.'
+
+    // if user exists
+    if (userExist) {
+      return res.json({
+        error: true,
+        errorMessage: 'Este email ya estaba registrado con nosotros, Quieres hacer login?',
+        status: 422,
+        path: 'email'
+      })
+    }
+
+    const { first, middle, last } = parseFullName(fullname)
+
+    const user = await models.User.create({
+      username: getRandomUsername(email),
+      fullname,
+      email,
+      password,
+      provider: 'email',
+      firstName: first,
+      middleName: middle,
+      lastName: last
     })
+
+    const { token, refreshToken } = getTokens(user)
+
+    res.json({
+      error: null,
+      // user: user.toJSON(),
+      token,
+      refreshToken,
+      errorMessage: ''
+    })
+  } catch (error) {
+    next(error)
   }
 }

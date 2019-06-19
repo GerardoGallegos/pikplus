@@ -11,12 +11,20 @@ const http = require('http').Server(app)
 const io = require('socket.io')(http)
 const bodyParser = require('body-parser')
 const morgan = require('morgan')
+const mongoose = require('mongoose')
 const methodOverride = require('method-override')
 const swig = require('swig')
 const multiparty = require('connect-multiparty')
 const API = require('./app/controllers/api')
 
 const multipartyMiddleware = multiparty()
+
+mongoose
+  .connect(process.env.MONGO_URI, { useNewUrlParser: true })
+  .catch((error) => {
+    console.log('ERROR MONGO-DB::', error)
+    throw error
+  })
 
 app.use(morgan('dev'))
 app.use(bodyParser.urlencoded({ extended: false }))

@@ -8,6 +8,7 @@ const bcrypt = require('bcryptjs')
 
 const UserSchema = new Schema({
   username: { type: String, unique: true, required: true },
+  provider: String,
   email: {
     type: String,
     lowercase: true,
@@ -18,7 +19,10 @@ const UserSchema = new Schema({
     maxlength: [100, 'El email debe de tener maximo 100 caracteres'],
     index: true
   },
-  name: { type: String, required: true },
+  fullname: { type: String, required: true },
+  firstName: String,
+  middleName: String,
+  lastName: String,
   created: { type: Date, default: Date.now },
   role: { type: String, enum: ['member', 'admin'], default: 'member' },
   avatar: String,
