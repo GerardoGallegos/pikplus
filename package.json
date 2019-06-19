@@ -3,6 +3,10 @@
   "version": "0.0.1",
   "engine": "node 5.1.1",
   "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon server.js"
+  },
   "dependencies": {
     "async-each": "^1.0.3",
     "aws-sdk": "^2.576.0",
@@ -40,6 +44,7 @@
     "zip-folder": "^1.0.0"
   },
   "devDependencies": {
+    "nodemon": "^2.0.0",
     "standard": "^14.3.1"
   }
 }
