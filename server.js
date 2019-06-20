@@ -21,13 +21,9 @@ const multipartyMiddleware = multiparty()
 app.use(morgan('dev'))
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json({ limit: '5mb' }))
-// Handle request DELETE-PUT
 app.use(methodOverride())
-// Parse multiparte
 app.use(multipartyMiddleware)
-// Enable estaticos
 app.use(express.static('./public'))
-// Config swig
 app.engine('html', swig.renderFile)
 app.set('view engine', 'html')
 app.set('views', path.join(__dirname, '/app/views'))
