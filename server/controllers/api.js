@@ -19,7 +19,10 @@ const auth = require('./auth/auth')
 const apiRoutes = express.Router()
 
 apiRoutes.get('/', (req, res) => {
-  res.render('manager-home.html')
+  res.json({
+    api: 'pikplus API',
+    version: 1
+  })
 })
 
 // AUTHORIZATION

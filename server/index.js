@@ -36,3 +36,6 @@ http.listen(process.env.PORT, () => {
     'Node server running on http://localhost:' + process.env.PORT
   )
 })
+
+// export server for testing
+module.exports = app
