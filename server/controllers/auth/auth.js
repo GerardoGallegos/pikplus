@@ -11,16 +11,16 @@ const getRandomUsername = (email) => {
 
 exports.authenticate = async (req, res, next) => {
   try {
-    if (!req.body.auth) {
+    if (!req.body.credentials) {
       return res.json({
         error: true,
-        errorMessage: 'Invalid Auth Object',
+        errorMessage: 'Invalid credentials Object',
         path: 'email',
         status: 422
       })
     }
 
-    const { email, password } = req.body.auth
+    const { email, password } = req.body.credentials
 
     if (!email) {
       return res.json({
