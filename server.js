@@ -5,7 +5,7 @@
 require('dotenv').config()
 
 // Connection MongoDB
-require('./app/connections/DB')
+require('./connections/DB')
 
 const express = require('express')
 const path = require('path')
@@ -16,7 +16,7 @@ const bodyParser = require('body-parser')
 const morgan = require('morgan')
 const methodOverride = require('method-override')
 const multiparty = require('connect-multiparty')
-const API = require('./app/controllers/api')
+const API = require('./controllers/api')
 
 const multipartyMiddleware = multiparty()
 
@@ -29,7 +29,7 @@ app.use(express.static(path.join(__dirname, 'public')))
 app.use(API)
 
 // Sockets management
-require('./app/connections/sockets')(io)
+require('./connections/sockets')(io)
 
 http.listen(process.env.PORT, () => {
   console.log(
