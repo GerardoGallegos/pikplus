@@ -9,6 +9,7 @@ require('./connections/DB')
 
 const express = require('express')
 const path = require('path')
+const cors = require('cors')
 const app = express()
 const http = require('http').Server(app)
 const io = require('socket.io')(http)
@@ -20,7 +21,11 @@ const API = require('./controllers/api')
 
 const multipartyMiddleware = multiparty()
 
+// Don't expose any software information to potential hackers.
+app.disable('x-powered-by')
+
 app.use(morgan('dev'))
+app.use(cors)
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json({ limit: '5mb' }))
 app.use(methodOverride())
