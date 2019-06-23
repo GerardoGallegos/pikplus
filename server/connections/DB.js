@@ -11,7 +11,10 @@ if (process.env.NODE_ENV === 'production') {
 }
 
 mongoose
-  .connect(MONGO_URI, { useNewUrlParser: true })
+  .connect(MONGO_URI, {
+    useUnifiedTopology: true,
+    useNewUrlParser: true
+  })
   .catch((error) => {
     console.log('ERROR MONGO-DB::', error)
     throw error
