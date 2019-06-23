@@ -2,6 +2,7 @@
 
 const express = require('express')
 const auth = require('./auth/auth')
+const user = require('./user/user-controller')
 
 // Get an instance of the router for api routes
 const api = express.Router()
@@ -19,18 +20,18 @@ api
   .post('/api/signup', auth.signup)
 
 // Users
-api.route('/user/:id')
-  .get()
-  .put()
+api.route('/api/user/:id')
+  .get(user.get)
+  .put(user.put)
   .post()
   .delete()
 
 // Designs
-api.route('/desings')
+api.route('/api/desings')
   .get()
 
 // Design
-api.route('/design/:id')
+api.route('/api/design/:id')
   .get()
   .put()
   .post()

@@ -1,14 +1,18 @@
 'use strict'
 
-// const DB = require('../connections/DB')(process.env.DB_USERS)
 const { Schema, model } = require('mongoose')
 const { isEmail } = require('validator')
 const uniqueValidator = require('mongoose-unique-validator')
 const bcrypt = require('bcryptjs')
 
+const avatarDefault = '/static/img/avatar.png'
+
 const UserSchema = new Schema({
   username: { type: String, unique: true, required: true },
   provider: String,
+  bio: String,
+  status: { type: String, enum: ['active', 'hold'], default: 'active' },
+  role: { type: String, enum: ['member', 'admin'], default: 'member' },
   email: {
     type: String,
     lowercase: true,
@@ -24,7 +28,6 @@ const UserSchema = new Schema({
   middleName: String,
   lastName: String,
   created: { type: Date, default: Date.now },
-  role: { type: String, enum: ['member', 'admin'], default: 'member' },
   avatar: String,
   password: { type: String, required: true }
 }, { timestamps: true })
@@ -54,6 +57,27 @@ UserSchema.methods.checkPassword = function (password) {
       resolve(res)
     })
   })
+}
+
+UserSchema.methods.toJSON = function () {
+  return {
+    fullname: this.fullname,
+    firstName: this.firstName,
+    lastName: this.lastName,
+    role: this.role,
+    email: this.email,
+    _id: this._id,
+    avatar: this.avatar || avatarDefault,
+    bio: this.bio
+  }
+}
+
+UserSchema.methods.toJSONPublic = function () {
+  return {
+    firstName: this.firstName,
+    avatar: this.avatar || avatarDefault,
+    bio: this.bio
+  }
 }
 
 module.exports = model('User', UserSchema)
