@@ -11,8 +11,6 @@ const express = require('express')
 const path = require('path')
 const cors = require('cors')
 const app = express()
-const http = require('http').Server(app)
-const io = require('socket.io')(http)
 const bodyParser = require('body-parser')
 const morgan = require('morgan')
 const methodOverride = require('method-override')
@@ -33,10 +31,7 @@ app.use(multipartyMiddleware)
 app.use(express.static(path.join(__dirname, 'public')))
 app.use(API)
 
-// Sockets management
-require('./connections/sockets')(io)
-
-http.listen(process.env.PORT, () => {
+app.listen(process.env.PORT, () => {
   console.log(
     'Node server running on http://localhost:' + process.env.PORT
   )
