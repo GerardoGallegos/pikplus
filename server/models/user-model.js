@@ -4,10 +4,15 @@ const { Schema, model } = require('mongoose')
 const { isEmail } = require('validator')
 const uniqueValidator = require('mongoose-unique-validator')
 const bcrypt = require('bcryptjs')
+const shortid = require('shortid')
 
 const avatarDefault = '/static/img/avatar.png'
 
 const UserSchema = new Schema({
+  _id: {
+    type: String,
+    default: shortid.generate
+  },
   username: { type: String, unique: true, required: true },
   provider: String,
   bio: String,

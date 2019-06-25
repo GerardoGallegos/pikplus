@@ -5,7 +5,7 @@
   "main": "server",
   "scripts": {
     "start": "node server",
-    "dev": "nodemon server",
+    "dev": "cross-env NODE_ENV=development nodemon server",
     "test": "cross-env NODE_ENV=test mocha --timeout 10000 --exit ./__test/**/*.test.js"
   },
   "dependencies": {
@@ -21,6 +21,7 @@
     "dotenv": "^8.2.0",
     "express": "*",
     "gm": "^1.23.1",
+    "ip": "^1.1.5",
     "js-sha512": "^0.8.0",
     "jsonwebtoken": "^8.5.1",
     "md5": "^2.2.1",
