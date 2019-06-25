@@ -101,6 +101,7 @@ exports.signup = async (req, res, next) => {
     }
 
     const { email, password, fullname } = req.body.user
+
     if (!fullname) {
       return res.json({
         error: true,
@@ -109,6 +110,7 @@ exports.signup = async (req, res, next) => {
         path: 'fullname'
       })
     }
+
     if (!email) {
       return res.json({
         error: true,
@@ -117,6 +119,7 @@ exports.signup = async (req, res, next) => {
         status: 422
       })
     }
+
     if (!password) {
       return res.json({
         error: true,

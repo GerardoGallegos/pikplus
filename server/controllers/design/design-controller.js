@@ -14,7 +14,6 @@ exports.getAll = async (req, res, next) => {
     if (text) {
       query = {
         $or: [
-          { title: { $regex: text, $options: 'i' } },
           { description: { $regex: text, $options: 'i' } }
         ]
       }
@@ -44,6 +43,30 @@ exports.getAll = async (req, res, next) => {
       designs,
       total,
       hasMore: skip + designs.length < total
+    })
+  } catch (error) {
+    next(error)
+  }
+}
+
+exports.post = async (req, res, next) => {
+  try {
+    if (!req.decode.sub) {
+      return res.json({
+        error: true,
+        errorMessage: 'No tienes permiso de realizar esta operacion'
+      })
+    }
+
+    const { description } = req.body.design
+
+    const design = await models.Design.create({
+      author: req.decode.sub,
+      description
+    })
+
+    res.json({
+      design
     })
   } catch (error) {
     next(error)
