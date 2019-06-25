@@ -3,6 +3,7 @@
 const express = require('express')
 const auth = require('./auth/auth')
 const user = require('./user/user-controller')
+const design = require('./design/design-controller')
 
 // Get an instance of the router for api routes
 const api = express.Router()
@@ -26,8 +27,8 @@ api.route('/api/user/:id')
   .delete(user.delete)
 
 // Designs
-api.route('/api/desings')
-  .get()
+api.route('/api/designs')
+  .get(design.getAll)
 
 // Design
 api.route('/api/design/:id')
