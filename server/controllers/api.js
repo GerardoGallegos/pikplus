@@ -23,8 +23,7 @@ api
 api.route('/api/user/:id')
   .get(user.get)
   .put(user.put)
-  .post()
-  .delete()
+  .delete(user.delete)
 
 // Designs
 api.route('/api/desings')
