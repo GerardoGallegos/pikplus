@@ -29,6 +29,7 @@ api.route('/api/user/:id')
 // Designs
 api.route('/api/designs')
   .get(design.getAll)
+  .post(design.post)
 
 // Design
 api.route('/api/design/:id')

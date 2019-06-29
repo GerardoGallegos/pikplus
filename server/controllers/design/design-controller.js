@@ -1,5 +1,6 @@
 const sanitize = require('mongo-sanitize')
 const models = require('../../models')
+const uploadDesign = require('../util/upload-design')
 
 exports.getAll = async (req, res, next) => {
   try {
@@ -58,16 +59,31 @@ exports.post = async (req, res, next) => {
       })
     }
 
-    const { description } = req.body.design
+    const { locations, colorsRGB } = await uploadDesign(req, [10, 50, 200, 300, 500, 1000])
 
     const design = await models.Design.create({
-      author: req.decode.sub,
-      description
+      description: req.body.description,
+      author: 'req.decode.sub',
+      colorsRGB,
+      source: {
+        s10: locations['10'],
+        s50: locations['50'],
+        s200: locations['200'],
+        s300: locations['300'],
+        s500: locations['500'],
+        s1000: locations['1000']
+      }
     })
 
-    res.json({
-      design
-    })
+    // console.log('**', output)
+
+    // const { description } = req.body.design
+
+    // res.json({
+    //   design
+    // })
+
+    res.json({ design })
   } catch (error) {
     next(error)
   }

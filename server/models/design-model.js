@@ -9,25 +9,11 @@ const DesignSchema = new Schema({
   author: { type: String, ref: 'User', required: [true, 'El Author es requerido'] },
   description: String,
   colorsRGB: [
-    {
-      r: Number,
-      g: Number,
-      b: Number,
-      p: Number
-    }
-  ],
-  colorsLAB: [
-    {
-      L: Number,
-      A: Number,
-      B: Number,
-      p: Number
-    }
+    [Number, Number, Number]
   ],
   source: {
-    s30: String,
-    s100: String,
-    s150: String,
+    s10: String,
+    s50: String,
     s200: String,
     s300: String,
     s1000: String
