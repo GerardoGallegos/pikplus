@@ -36,6 +36,7 @@ exports.getAll = async (req, res, next) => {
       .find(query)
       .limit(limit)
       .skip(skip)
+      .populate('author')
       .sort({ createdAt: -1 })
       .exec()
 
