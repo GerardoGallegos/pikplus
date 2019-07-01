@@ -63,7 +63,7 @@ exports.post = async (req, res, next) => {
 
     const design = await models.Design.create({
       description: req.body.description,
-      author: 'req.decode.sub',
+      author: req.decode.sub,
       colorsRGB,
       source: {
         s10: locations['10'],

@@ -46,9 +46,9 @@ const authMiddleware = async (req, res, next) => {
   const refreshToken = req.headers['refresh-token']
 
   req.decode = {}
-  req.auth = {}
   req.isLoggedIn = false
-  res.set('X-Expired-Session', false)
+
+  res.set('Cache-Control', 'no-store')
 
   if (!token || !refreshToken) return next()
 

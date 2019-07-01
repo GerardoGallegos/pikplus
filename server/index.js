@@ -23,12 +23,6 @@ const app = express()
 // Don't expose any software information to potential hackers.
 app.disable('x-powered-by')
 
-// Will be replacement by the auth middleware
-app.use((req, res, next) => {
-  req.decode = {}
-  next()
-})
-
 app.use(cors())
 app.use(morgan('dev'))
 app.use(methodOverride())
