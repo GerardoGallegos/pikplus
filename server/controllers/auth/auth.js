@@ -78,7 +78,7 @@ exports.authenticate = async (req, res, next) => {
     const { token, refreshToken } = getTokens(user)
 
     res.json({
-      // user: user.toJSON(),
+      user: user.toJSON(),
       error: null,
       token,
       refreshToken,
@@ -178,7 +178,7 @@ exports.signup = async (req, res, next) => {
 
     res.json({
       error: null,
-      // user: user.toJSON(),
+      user: user.toJSON(),
       token,
       refreshToken,
       errorMessage: ''

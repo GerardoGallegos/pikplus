@@ -1,8 +1,9 @@
 const jwt = require('jsonwebtoken')
-const moment = require('moment')
+const models = require('../models')
 
 const JWT_SECRET = process.env.JWT_SECRET
 const JWT_SECRET_PASS = process.env.JWT_SECRET_PASS
+// const IS_DEV = process.env.NODE_ENV !== 'production'
 
 const getToken = ({ _id, role }) => {
   const payload = {
@@ -14,10 +15,9 @@ const getToken = ({ _id, role }) => {
 
 const getRefreshToken = ({ _id }) => {
   const payload = { sub: _id }
-  return jwt.sign(payload, JWT_SECRET, { expiresIn: '7d' })
+  return jwt.sign(payload, JWT_SECRET, { expiresIn: '3m' })
 }
 
-// Aqui no exponemos el id del usuario en su lugar enviamos un hash
 const getResetPasswordToken = (sub) => {
   return jwt.sign({
     sub
@@ -41,11 +41,56 @@ const getTokens = (user) => ({
   refreshToken: getRefreshToken(user)
 })
 
-const authMiddleware = (req, res, next) => {
-  const jwtToken = req.headers.jwt
-  const jwtRfs = req.headers.jwt_rfs
+const authMiddleware = async (req, res, next) => {
+  const token = req.headers.token
+  const refreshToken = req.headers['refresh-token']
 
-  console.log(jwtToken, jwtRfs)
+  req.decode = {}
+  req.auth = {}
+  req.isLoggedIn = false
+  res.set('X-Expired-Session', false)
+
+  if (!token || !refreshToken) return next()
+
+  try {
+    const user = jwt.verify(token, JWT_SECRET)
+    req.decode = user
+    req.isLoggedIn = true
+  } catch (error) {
+    // JWT Expired
+    if (error.message === 'jwt expired') {
+      console.log('TOKEN EXPIRED')
+      // Get user's token
+      const e = await jwt.decode(token)
+      const user = await models.User.findById(e.sub)
+      if (!user) {
+        req.decode = {}
+        req.isLoggedIn = false
+        return next()
+      }
+
+      // Validates the refreshToken
+      // If is ivalid, We going to create and send the new token
+      try {
+        jwt.verify(refreshToken, JWT_SECRET)
+        // Valid refresh token
+        // It's created new token with last DB data
+        const newToken = getToken(user)
+
+        req.decode = await jwt.decode(newToken)
+
+        res.set('Access-Control-Expose-Headers', 'X-Pikplus-Token')
+        res.set('X-Pikplus-Token', newToken)
+        return next()
+      } catch (error) {
+        // Expired session, logout on client side
+        if (error.message === 'jwt expired' || error.message === 'invalid token') {
+          res.set('Access-Control-Expose-Headers', 'x-pikplus-session-expired')
+          res.set('x-pikplus-session-expired', 'true')
+        }
+      }
+    }
+  }
   next()
 }
 
